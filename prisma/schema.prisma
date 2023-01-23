@@ -9,3 +9,115 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id         String   @id
+  name       String
+  email      String   @unique
+  roles      String   @default("USER")
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  published_products Product[] @relation(name: "PublishedProducts")
+  created_products   Product[] @relation(name: "CreatedProducts")
+  updated_products   Product[] @relation(name: "UpdatedProducts")
+
+  created_transactions Transaction[] @relation(name: "CreatedTransactions")
+  updated_transactions Transaction[] @relation(name: "UpdatedTransactions")
+
+  created_transaction_items Transaction_Items[] @relation(name: "CreatedTransactionItems")
+  updated_transaction_items Transaction_Items[] @relation(name: "UpdatedTransactionItems")
+
+  created_carts Carts[] @relation(name: "CreatedCarts")
+  updated_carts Carts[] @relation(name: "UpdatedCarts")
+
+  @@map("users")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  price       Float
+  description String
+  image       String
+  category    String[]
+
+  published_by    User     @relation(name: "PublishedProducts", fields: [published_by_id], references: [id])
+  published_by_id String
+  published_at    DateTime @default(now())
+
+  created_by    User   @relation(name: "CreatedProducts", fields: [created_by_id], references: [id])
+  created_by_id String
+
+  updated_by    User   @relation(name: "UpdatedProducts", fields: [updated_by_id], references: [id])
+  updated_by_id String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  @@map("products")
+}
+
+model Transaction {
+  id          Int    @id @default(autoincrement())
+  users_id    String
+  name        String
+  email       String
+  address     String
+  phone       String
+  description String
+  url         String
+  total_price Float
+  status      String
+
+  created_by    User   @relation(name: "CreatedTransactions", fields: [created_by_id], references: [id])
+  created_by_id String
+
+  updated_by    User   @relation(name: "UpdatedTransactions", fields: [updated_by_id], references: [id])
+  updated_by_id String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  @@map("transactions")
+}
+
+model Transaction_Items {
+  id              Int    @id @default(autoincrement())
+  users_id        String
+  products_id     Int
+  transactions_id Int
+
+  created_by    User   @relation(name: "CreatedTransactionItems", fields: [created_by_id], references: [id])
+  created_by_id String
+
+  updated_by    User   @relation(name: "UpdatedTransactionItems", fields: [updated_by_id], references: [id])
+  updated_by_id String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  @@map("transaction_items")
+}
+
+model Carts {
+  id          Int    @id @default(autoincrement())
+  users_id    String
+  products_id Int
+
+  created_by    User   @relation(name: "CreatedCarts", fields: [created_by_id], references: [id])
+  created_by_id String
+
+  updated_by    User   @relation(name: "UpdatedCarts", fields: [updated_by_id], references: [id])
+  updated_by_id String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  @@map("carts")
+}
