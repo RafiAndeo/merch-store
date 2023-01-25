@@ -38,7 +38,7 @@ model User {
 model Product {
   id          Int      @id @default(autoincrement())
   name        String
-  price       Float
+  price       Int
   description String
   image       String
   category    String[]
@@ -69,7 +69,7 @@ model Transaction {
   phone       String
   description String
   url         String
-  total_price Float
+  total_price Int
   status      String
 
   created_by    User   @relation(name: "CreatedTransactions", fields: [created_by_id], references: [id])
